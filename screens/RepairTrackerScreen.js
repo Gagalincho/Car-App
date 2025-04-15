@@ -19,7 +19,7 @@ export default function RepairTrackerScreen() {
   const loadRepairs = async () => {
     try {
       const results = await executeSelectQuery(
-        'SELECT * FROM repairs ORDER BY date DESC'
+        'SELECT * FROM repairs ORDER BY id DESC'
       );
       setRepairs(results);
     } catch (error) {
@@ -114,7 +114,7 @@ export default function RepairTrackerScreen() {
       <View style={styles.repairsContainer}>
         <View style={styles.totalContainer}>
           <Text style={styles.totalLabel}>Total Repairs Cost:</Text>
-          <Text style={styles.totalValue}>{calculateTotalCost()} лв.</Text>
+          <Text style={styles.totalValue}>${calculateTotalCost()}</Text>
         </View>
 
         <Text style={styles.sectionTitle}>Repair History</Text>
@@ -123,7 +123,7 @@ export default function RepairTrackerScreen() {
             <Text style={styles.repairDate}>{repair.date}</Text>
             <View style={styles.repairDetails}>
               <Text style={styles.repairDescription}>{repair.description}</Text>
-              <Text style={styles.repairCost}>Cost: {parseFloat(repair.cost).toFixed(2)} лв.</Text>
+              <Text style={styles.repairCost}>Cost: ${parseFloat(repair.cost).toFixed(2)}</Text>
             </View>
             {repair.notes && <Text style={styles.notes}>Notes: {repair.notes}</Text>}
           </View>
