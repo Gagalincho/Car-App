@@ -119,7 +119,7 @@ export default function DashboardScreen({ navigation }) {
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statLabel}>Total Fuel Cost</Text>
-            <Text style={styles.statValue}>${stats.totalFuelCost}</Text>
+            <Text style={styles.statValue}>{stats.totalFuelCost} лв.</Text>
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statLabel}>Avg. Consumption</Text>
@@ -127,7 +127,7 @@ export default function DashboardScreen({ navigation }) {
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statLabel}>Total Repairs</Text>
-            <Text style={styles.statValue}>${stats.totalRepairs}</Text>
+            <Text style={styles.statValue}>{stats.totalRepairs} лв.</Text>
           </View>
         </View>
 

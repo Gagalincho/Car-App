@@ -170,8 +170,8 @@ export default function FuelTrackerScreen() {
               <View style={styles.entryDetails}>
                 <Text style={styles.detailText}>Kilometers: {parseFloat(entry.kilometers).toFixed(1)} km</Text>
                 <Text style={styles.detailText}>Liters: {parseFloat(entry.liters).toFixed(2)} L</Text>
-                <Text style={styles.detailText}>Price/L: ${parseFloat(entry.price_per_liter).toFixed(2)}</Text>
-                <Text style={styles.detailText}>Total: ${parseFloat(entry.total_cost).toFixed(2)}</Text>
+                <Text style={styles.detailText}>Price/L: {parseFloat(entry.price_per_liter).toFixed(2)} лв.</Text>
+                <Text style={styles.detailText}>Total: {parseFloat(entry.total_cost).toFixed(2)} лв.</Text>
                 <Text style={[styles.detailText, styles.consumption]}>
                   Consumption: {consumption ? `${consumption} L/100km` : 'N/A'}
                 </Text>
