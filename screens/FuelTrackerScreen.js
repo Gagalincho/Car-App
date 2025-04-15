@@ -19,8 +19,9 @@ export default function FuelTrackerScreen() {
 
   const loadEntries = async () => {
     try {
+      // Get entries ordered by ID descending (newest first)
       const results = await executeSelectQuery(
-        'SELECT * FROM fuel_entries ORDER BY date DESC, id DESC'
+        'SELECT * FROM fuel_entries ORDER BY id DESC'
       );
       setEntries(results);
     } catch (error) {
@@ -42,17 +43,27 @@ export default function FuelTrackerScreen() {
     }
 
     try {
+      // Get the latest entry before adding the new one
+      const previousEntries = await executeSelectQuery(
+        'SELECT * FROM fuel_entries ORDER BY id DESC LIMIT 1'
+      );
+      
+      const totalCost = parseFloat(formData.liters) * parseFloat(formData.price_per_liter);
+      
+      // Add the new entry
       await executeQuery(
-        'INSERT INTO fuel_entries (date, kilometers, liters, price_per_liter, notes) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO fuel_entries (date, kilometers, liters, price_per_liter, total_cost, notes) VALUES (?, ?, ?, ?, ?, ?)',
         [
           formData.date,
           parseFloat(formData.kilometers),
           parseFloat(formData.liters),
           parseFloat(formData.price_per_liter),
+          totalCost,
           formData.notes
         ]
       );
 
+      // Reset form
       setFormData({
         date: new Date().toISOString().split('T')[0],
         kilometers: '',
@@ -61,18 +72,42 @@ export default function FuelTrackerScreen() {
         notes: ''
       });
 
+      // Reload entries to show the new entry with consumption
       loadEntries();
+
+      // If there was a previous entry, calculate and show consumption
+      if (previousEntries && previousEntries.length > 0) {
+        const prevEntry = previousEntries[0];
+        const currentKm = parseFloat(formData.kilometers);
+        const prevKm = parseFloat(prevEntry.kilometers);
+        const kmDiff = currentKm - prevKm;
+        
+        if (kmDiff > 0) {
+          const consumption = (parseFloat(formData.liters) / kmDiff) * 100;
+          Alert.alert(
+            'Entry Added',
+            `Fuel consumption: ${consumption.toFixed(1)} L/100km`
+          );
+        }
+      }
     } catch (error) {
       console.error('Error adding entry:', error);
       Alert.alert('Error', 'Failed to add fuel entry');
     }
   };
 
-  const calculateConsumption = (entry, prevEntry) => {
-    if (!prevEntry) return null;
-    const kmDiff = entry.kilometers - prevEntry.kilometers;
+  const calculateConsumption = (currentEntry, nextEntry) => {
+    if (!nextEntry) return null;
+    
+    const currentKm = parseFloat(currentEntry.kilometers);
+    const nextKm = parseFloat(nextEntry.kilometers);
+    const kmDiff = currentKm - nextKm; // Current entry should have higher km than next entry
+    
     if (kmDiff <= 0) return null;
-    const consumption = (entry.liters / kmDiff) * 100;
+    
+    const consumption = (parseFloat(currentEntry.liters) / kmDiff) * 100;
+    if (isNaN(consumption) || !isFinite(consumption)) return null;
+    
     return consumption.toFixed(1);
   };
 
@@ -127,21 +162,26 @@ export default function FuelTrackerScreen() {
 
       <View style={styles.entriesContainer}>
         <Text style={styles.sectionTitle}>Fuel History</Text>
-        {entries.map((entry, index) => (
-          <View key={entry.id} style={styles.entryCard}>
-            <Text style={styles.entryDate}>{entry.date}</Text>
-            <View style={styles.entryDetails}>
-              <Text style={styles.detailText}>Kilometers: {parseFloat(entry.kilometers).toFixed(1)} km</Text>
-              <Text style={styles.detailText}>Liters: {parseFloat(entry.liters).toFixed(2)} L</Text>
-              <Text style={styles.detailText}>Price/L: ${parseFloat(entry.price_per_liter).toFixed(2)}</Text>
-              <Text style={styles.detailText}>Total: ${(entry.liters * entry.price_per_liter).toFixed(2)}</Text>
-              <Text style={styles.consumption}>
-                Consumption: {calculateConsumption(entry, entries[index + 1]) || 'N/A'} L/100km
-              </Text>
+        {entries.map((entry, index) => {
+          const nextEntry = entries[index + 1]; // Get the next entry (older entry with lower ID)
+          const consumption = calculateConsumption(entry, nextEntry);
+          
+          return (
+            <View key={entry.id} style={styles.entryCard}>
+              <Text style={styles.entryDate}>{entry.date}</Text>
+              <View style={styles.entryDetails}>
+                <Text style={styles.detailText}>Kilometers: {parseFloat(entry.kilometers).toFixed(1)} km</Text>
+                <Text style={styles.detailText}>Liters: {parseFloat(entry.liters).toFixed(2)} L</Text>
+                <Text style={styles.detailText}>Price/L: ${parseFloat(entry.price_per_liter).toFixed(2)}</Text>
+                <Text style={styles.detailText}>Total: ${parseFloat(entry.total_cost).toFixed(2)}</Text>
+                <Text style={styles.consumption}>
+                  Consumption: {consumption ? `${consumption} L/100km` : 'N/A'}
+                </Text>
+              </View>
+              {entry.notes && <Text style={styles.notes}>Notes: {entry.notes}</Text>}
             </View>
-            {entry.notes && <Text style={styles.notes}>Notes: {entry.notes}</Text>}
-          </View>
-        ))}
+          );
+        })}
       </View>
     </ScrollView>
   );

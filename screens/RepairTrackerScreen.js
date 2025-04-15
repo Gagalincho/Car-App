@@ -7,8 +7,7 @@ export default function RepairTrackerScreen() {
   const [repairs, setRepairs] = useState([]);
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
-    type: '',
-    garage: '',
+    description: '',
     cost: '',
     notes: ''
   });
@@ -36,18 +35,17 @@ export default function RepairTrackerScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!formData.type || !formData.cost) {
+    if (!formData.description || !formData.cost) {
       Alert.alert('Error', 'Please fill in all required fields');
       return;
     }
 
     try {
       await executeQuery(
-        'INSERT INTO repairs (date, type, garage, cost, notes) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO repairs (date, description, cost, notes) VALUES (?, ?, ?, ?)',
         [
           formData.date,
-          formData.type,
-          formData.garage,
+          formData.description,
           parseFloat(formData.cost),
           formData.notes
         ]
@@ -56,8 +54,7 @@ export default function RepairTrackerScreen() {
       // Reset form
       setFormData({
         date: new Date().toISOString().split('T')[0],
-        type: '',
-        garage: '',
+        description: '',
         cost: '',
         notes: ''
       });
@@ -88,16 +85,9 @@ export default function RepairTrackerScreen() {
         
         <TextInput
           style={styles.input}
-          value={formData.type}
-          onChangeText={(value) => handleInputChange('type', value)}
-          placeholder="Type of Repair"
-        />
-        
-        <TextInput
-          style={styles.input}
-          value={formData.garage}
-          onChangeText={(value) => handleInputChange('garage', value)}
-          placeholder="Garage (optional)"
+          value={formData.description}
+          onChangeText={(value) => handleInputChange('description', value)}
+          placeholder="Description"
         />
         
         <TextInput
@@ -132,8 +122,7 @@ export default function RepairTrackerScreen() {
           <View key={repair.id} style={styles.repairCard}>
             <Text style={styles.repairDate}>{repair.date}</Text>
             <View style={styles.repairDetails}>
-              <Text style={styles.repairType}>{repair.type}</Text>
-              {repair.garage && <Text>Garage: {repair.garage}</Text>}
+              <Text style={styles.repairDescription}>{repair.description}</Text>
               <Text style={styles.repairCost}>Cost: ${parseFloat(repair.cost).toFixed(2)}</Text>
             </View>
             {repair.notes && <Text style={styles.notes}>Notes: {repair.notes}</Text>}

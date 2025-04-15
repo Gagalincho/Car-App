@@ -4,7 +4,6 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9ff',
-    padding: 16,
   },
   formContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -16,9 +15,6 @@ export default StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 12,
     elevation: 8,
-  },
-  maintenanceContainer: {
-    marginBottom: 24,
   },
   sectionTitle: {
     fontSize: 22,
@@ -38,15 +34,6 @@ export default StyleSheet.create({
     borderColor: 'rgba(99, 102, 241, 0.2)',
     fontSize: 16,
     color: '#1e1b4b',
-    shadowColor: '#a5b4fc',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
   },
   button: {
     backgroundColor: '#4f46e5',
@@ -64,6 +51,9 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     letterSpacing: 0.5,
+  },
+  maintenanceContainer: {
+    padding: 20,
   },
   maintenanceCard: {
     backgroundColor: 'white',
@@ -83,45 +73,59 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     color: '#4338ca',
     marginBottom: 12,
-    letterSpacing: 0.5,
   },
   maintenanceDetails: {
     marginBottom: 12,
-    backgroundColor: 'rgba(224, 231, 255, 0.2)',
-    padding: 12,
-    borderRadius: 8,
+  },
+  maintenanceType: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   detailText: {
     fontSize: 16,
     color: '#1e1b4b',
-    marginBottom: 6,
-  },
-  cost: {
-    color: '#4f46e5',
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: 8,
-    backgroundColor: 'rgba(224, 231, 255, 0.4)',
-    padding: 8,
-    borderRadius: 6,
-    alignSelf: 'flex-start',
-  },
-  description: {
-    color: '#6b7280',
-    fontStyle: 'italic',
-    backgroundColor: 'rgba(243, 244, 246, 0.5)',
-    padding: 8,
-    borderRadius: 6,
-    marginTop: 8,
   },
   nextDue: {
+    fontSize: 14,
+    fontWeight: 'bold',
     color: '#10b981',
+  },
+  notes: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: '#666',
+  },
+  buttonContainer: {
+    marginTop: 10,
+    alignItems: 'flex-end',
+    paddingRight: 10,
+  },
+  markDoneButton: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  markDoneButtonText: {
+    color: 'white',
     fontSize: 16,
     fontWeight: '600',
-    marginTop: 8,
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    padding: 8,
-    borderRadius: 6,
-    alignSelf: 'flex-start',
+  },
+  completedTitle: {
+    color: '#666',
+    marginTop: 20,
+  },
+  completedCard: {
+    opacity: 0.6,
+    backgroundColor: '#f5f5f5',
+    borderColor: 'rgba(99, 102, 241, 0.05)',
+  },
+  completedText: {
+    color: '#666',
   },
 }); 
