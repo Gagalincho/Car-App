@@ -17,23 +17,25 @@ export default function DashboardScreen({ navigation }) {
       setIsLoading(true);
       setError(null);
 
-      // Get total kilometers and fuel costs
+      // Get all fuel entries
       const fuelEntries = await executeSelectQuery(
-        'SELECT kilometers, liters, price_per_liter FROM fuel_entries ORDER BY date DESC'
+        'SELECT kilometers, liters, price_per_liter FROM fuel_entries'
       );
 
       let totalKm = 0;
       let totalFuelCost = 0;
       let totalLiters = 0;
-      let kmDiff = 0;
 
       if (fuelEntries.length > 0) {
-        totalKm = parseFloat(fuelEntries[0].kilometers);
-        kmDiff = totalKm - (parseFloat(fuelEntries[fuelEntries.length - 1]?.kilometers) || 0);
-        
+        // Sum up all kilometers and liters
         fuelEntries.forEach(entry => {
-          totalFuelCost += parseFloat(entry.liters) * parseFloat(entry.price_per_liter);
-          totalLiters += parseFloat(entry.liters);
+          const kilometers = parseFloat(entry.kilometers);
+          const liters = parseFloat(entry.liters);
+          const pricePerLiter = parseFloat(entry.price_per_liter);
+          
+          totalKm += kilometers;
+          totalLiters += liters;
+          totalFuelCost += liters * pricePerLiter;
         });
       }
 
@@ -41,13 +43,13 @@ export default function DashboardScreen({ navigation }) {
       const repairs = await executeSelectQuery('SELECT cost FROM repairs');
       const totalRepairs = repairs.reduce((sum, repair) => sum + parseFloat(repair.cost), 0);
 
-      // Calculate average consumption
-      const avgConsumption = kmDiff > 0 ? (totalLiters / kmDiff) * 100 : 0;
+      // Calculate average consumption: (Total Liters / Total Kilometers) × 100
+      const avgConsumption = totalKm > 0 ? (totalLiters / totalKm) * 100 : 0;
 
       setStats({
         totalKm: totalKm.toFixed(1),
         totalFuelCost: totalFuelCost.toFixed(2),
-        avgConsumption: avgConsumption.toFixed(1),
+        avgConsumption: avgConsumption.toFixed(2), // Changed to 2 decimal places for more precision
         totalRepairs: totalRepairs.toFixed(2)
       });
     } catch (error) {
