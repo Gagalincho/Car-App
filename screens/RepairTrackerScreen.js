@@ -19,7 +19,7 @@ export default function RepairTrackerScreen() {
   const loadRepairs = async () => {
     try {
       const results = await executeSelectQuery(
-        'SELECT * FROM repairs ORDER BY id DESC'
+        'SELECT * FROM repairs ORDER BY date DESC'
       );
       setRepairs(results);
     } catch (error) {

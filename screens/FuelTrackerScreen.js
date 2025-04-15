@@ -42,14 +42,12 @@ export default function FuelTrackerScreen() {
     }
 
     try {
-      // Get the latest entry before adding the new one
       const previousEntries = await executeSelectQuery(
         'SELECT * FROM fuel_entries ORDER BY id DESC LIMIT 1'
       );
       
       const totalCost = parseFloat(formData.liters) * parseFloat(formData.price_per_liter);
       
-      // Add the new entry
       await executeQuery(
         'INSERT INTO fuel_entries (date, kilometers, liters, price_per_liter, total_cost, notes) VALUES (?, ?, ?, ?, ?, ?)',
         [
@@ -62,7 +60,6 @@ export default function FuelTrackerScreen() {
         ]
       );
 
-      // Reset form
       setFormData({
         date: new Date().toISOString().split('T')[0],
         kilometers: '',
@@ -71,10 +68,8 @@ export default function FuelTrackerScreen() {
         notes: ''
       });
 
-      // Reload entries to show the new entry with consumption
       loadEntries();
 
-      // If there was a previous entry, calculate and show consumption
       if (previousEntries && previousEntries.length > 0) {
         const prevEntry = previousEntries[0];
         const currentKm = parseFloat(formData.kilometers);
@@ -96,15 +91,11 @@ export default function FuelTrackerScreen() {
   };
 
   const calculateConsumption = (entry) => {
-    // Get the values from the current entry
     const kilometers = parseFloat(entry.kilometers);
     const liters = parseFloat(entry.liters);
     
-    // Calculate consumption using current entry's data
-    // Formula: (liters / kilometers) * 100 to get L/100km
     const consumption = (liters / kilometers) * 100;
     
-    // Validate the result
     if (isNaN(consumption) || !isFinite(consumption) || kilometers <= 0) return null;
     
     return consumption.toFixed(1);

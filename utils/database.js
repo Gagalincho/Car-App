@@ -9,11 +9,9 @@ export const initDatabase = async () => {
       return;
     }
 
-    // Use openDatabaseAsync for SDK 52
     db = await SQLite.openDatabaseAsync('car_journal.db');
     console.log('DB Initialized');
 
-    // Use execAsync for bulk operations
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS fuel_entries (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,11 +44,9 @@ export const initDatabase = async () => {
       );
     `);
 
-    // Add completed column if it doesn't exist
     try {
       await db.execAsync('ALTER TABLE maintenance ADD COLUMN completed INTEGER DEFAULT 0;');
     } catch (error) {
-      // Column might already exist, which is fine
       console.log('completed column might already exist');
     }
 
@@ -92,14 +88,14 @@ export const resetDatabase = async () => {
       throw new Error('Database not initialized');
     }
 
-    // Drop all tables
+
     await db.execAsync(`
       DROP TABLE IF EXISTS fuel_entries;
       DROP TABLE IF EXISTS repairs;
       DROP TABLE IF EXISTS maintenance;
     `);
 
-    // Recreate tables
+
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS fuel_entries (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
