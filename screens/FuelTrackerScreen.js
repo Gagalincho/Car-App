@@ -19,7 +19,6 @@ export default function FuelTrackerScreen() {
 
   const loadEntries = async () => {
     try {
-      // Get entries ordered by ID descending (newest first)
       const results = await executeSelectQuery(
         'SELECT * FROM fuel_entries ORDER BY id DESC'
       );
@@ -96,17 +95,17 @@ export default function FuelTrackerScreen() {
     }
   };
 
-  const calculateConsumption = (currentEntry, nextEntry) => {
-    if (!nextEntry) return null;
+  const calculateConsumption = (entry) => {
+    // Get the values from the current entry
+    const kilometers = parseFloat(entry.kilometers);
+    const liters = parseFloat(entry.liters);
     
-    const currentKm = parseFloat(currentEntry.kilometers);
-    const nextKm = parseFloat(nextEntry.kilometers);
-    const kmDiff = currentKm - nextKm; // Current entry should have higher km than next entry
+    // Calculate consumption using current entry's data
+    // Formula: (liters / kilometers) * 100 to get L/100km
+    const consumption = (liters / kilometers) * 100;
     
-    if (kmDiff <= 0) return null;
-    
-    const consumption = (parseFloat(currentEntry.liters) / kmDiff) * 100;
-    if (isNaN(consumption) || !isFinite(consumption)) return null;
+    // Validate the result
+    if (isNaN(consumption) || !isFinite(consumption) || kilometers <= 0) return null;
     
     return consumption.toFixed(1);
   };
@@ -162,9 +161,8 @@ export default function FuelTrackerScreen() {
 
       <View style={styles.entriesContainer}>
         <Text style={styles.sectionTitle}>Fuel History</Text>
-        {entries.map((entry, index) => {
-          const nextEntry = entries[index + 1]; // Get the next entry (older entry with lower ID)
-          const consumption = calculateConsumption(entry, nextEntry);
+        {entries.map((entry) => {
+          const consumption = calculateConsumption(entry);
           
           return (
             <View key={entry.id} style={styles.entryCard}>
@@ -174,7 +172,7 @@ export default function FuelTrackerScreen() {
                 <Text style={styles.detailText}>Liters: {parseFloat(entry.liters).toFixed(2)} L</Text>
                 <Text style={styles.detailText}>Price/L: ${parseFloat(entry.price_per_liter).toFixed(2)}</Text>
                 <Text style={styles.detailText}>Total: ${parseFloat(entry.total_cost).toFixed(2)}</Text>
-                <Text style={styles.consumption}>
+                <Text style={[styles.detailText, styles.consumption]}>
                   Consumption: {consumption ? `${consumption} L/100km` : 'N/A'}
                 </Text>
               </View>
